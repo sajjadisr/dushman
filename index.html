@@ -3,12 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Fitness & Nutrition Tracker</title>
+    <meta name="description" content="Track your workouts, meals, and fitness progress" />
+    <meta name="theme-color" content="#ffffff" />
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fitness & Nutrition Tracker" />
+    <meta property="og:description" content="Track your workouts, meals, and fitness progress" />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/your-repo-name/site.webmanifest" />
+    
+    <!-- PWA Tags -->
+    <link rel="manifest" href="/your-repo-name/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <script type="module" crossorigin src="/your-repo-name/assets/index-lwmDaki8.js"></script>
     <link rel="stylesheet" crossorigin href="/your-repo-name/assets/index-SRoHm9OT.css">
   </head>
   <body>
     <div id="root"></div>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    
+    <!-- GitHub Pages SPA Redirect -->
+    <script type="text/javascript">
+      // Single Page Apps for GitHub Pages
+      // MIT License
+      // https://github.com/rafgraph/spa-github-pages
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
   </body>
 </html>
