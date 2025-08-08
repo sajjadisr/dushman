@@ -83,16 +83,90 @@ export class MemStorage implements IStorage {
   }
 
   private initializeDefaultData() {
-    // Add Persian foods
+    // Add comprehensive Persian foods
     const persianFoods: InsertFood[] = [
+      // غلات و نان
+      { name: "برنج سفید", caloriesPerServing: 205, servingSize: "1 پیمانه (150 گرم)", category: "غلات" },
       { name: "برنج زعفرانی", caloriesPerServing: 280, servingSize: "1 پیمانه (150 گرم)", category: "غلات" },
+      { name: "زرشک پلو", caloriesPerServing: 320, servingSize: "1 پیمانه", category: "غلات" },
+      { name: "عدس پلو", caloriesPerServing: 290, servingSize: "1 پیمانه", category: "غلات" },
+      { name: "باقالی پلو", caloriesPerServing: 310, servingSize: "1 پیمانه", category: "غلات" },
+      { name: "نان بربری", caloriesPerServing: 240, servingSize: "1 عدد (80 گرم)", category: "غلات" },
+      { name: "نان سنگک", caloriesPerServing: 260, servingSize: "1 عدد (85 گرم)", category: "غلات" },
+      { name: "نان تافتون", caloriesPerServing: 200, servingSize: "1 عدد (70 گرم)", category: "غلات" },
+      { name: "نان لواش", caloriesPerServing: 180, servingSize: "1 عدد (60 گرم)", category: "غلات" },
+
+      // پروتئین ها
       { name: "کباب کوبیده", caloriesPerServing: 450, servingSize: "2 سیخ (200 گرم)", category: "پروتئین" },
-      { name: "قورمه سبزی", caloriesPerServing: 320, servingSize: "1 پیمانه", category: "خورش" },
-      { name: "زرشک پلو", caloriesPerServing: 280, servingSize: "1 پیمانه", category: "غلات" },
       { name: "جوجه کباب", caloriesPerServing: 380, servingSize: "1 سرو (180 گرم)", category: "پروتئین" },
+      { name: "کباب برگ", caloriesPerServing: 520, servingSize: "1 سیخ (250 گرم)", category: "پروتئین" },
+      { name: "کباب بختیاری", caloriesPerServing: 480, servingSize: "1 سیخ (220 گرم)", category: "پروتئین" },
+      { name: "ماهی سالمون", caloriesPerServing: 350, servingSize: "1 قطعه (150 گرم)", category: "پروتئین" },
+      { name: "ماهی آزاد", caloriesPerServing: 320, servingSize: "1 قطعه (150 گرم)", category: "پروتئین" },
+      { name: "مرغ تنوری", caloriesPerServing: 280, servingSize: "1 قطعه (120 گرم)", category: "پروتئین" },
+      { name: "گوشت قرمز", caloriesPerServing: 400, servingSize: "100 گرم", category: "پروتئین" },
+      { name: "تخم مرغ", caloriesPerServing: 70, servingSize: "1 عدد", category: "پروتئین" },
+
+      // خورش ها
+      { name: "قورمه سبزی", caloriesPerServing: 320, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "فسنجان", caloriesPerServing: 420, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "کرفس", caloriesPerServing: 280, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "بامیه", caloriesPerServing: 250, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "بادمجان", caloriesPerServing: 290, servingSize: "1 پیمانه", category: "خورش" },
       { name: "کشک بادمجان", caloriesPerServing: 220, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "خورش کدو", caloriesPerServing: 200, servingSize: "1 پیمانه", category: "خورش" },
+      { name: "آلو اسفناج", caloriesPerServing: 260, servingSize: "1 پیمانه", category: "خورش" },
+
+      // کوکو ها
+      { name: "کوکو سبزی", caloriesPerServing: 180, servingSize: "1 برش", category: "کوکو" },
+      { name: "کوکو سیب زمینی", caloriesPerServing: 220, servingSize: "1 برش", category: "کوکو" },
+      { name: "کوکو بادمجان", caloriesPerServing: 200, servingSize: "1 برش", category: "کوکو" },
+
+      // آش و سوپ
       { name: "آش رشته", caloriesPerServing: 300, servingSize: "1 کاسه", category: "سوپ" },
-      { name: "کوکو سبزی", caloriesPerServing: 180, servingSize: "1 برش", category: "کوکو" }
+      { name: "آش انار", caloriesPerServing: 280, servingSize: "1 کاسه", category: "سوپ" },
+      { name: "آش دوغ", caloriesPerServing: 250, servingSize: "1 کاسه", category: "سوپ" },
+      { name: "سوپ جو", caloriesPerServing: 200, servingSize: "1 کاسه", category: "سوپ" },
+
+      // میوه ها
+      { name: "سیب", caloriesPerServing: 80, servingSize: "1 عدد متوسط", category: "میوه" },
+      { name: "پرتقال", caloriesPerServing: 60, servingSize: "1 عدد متوسط", category: "میوه" },
+      { name: "موز", caloriesPerServing: 100, servingSize: "1 عدد متوسط", category: "میوه" },
+      { name: "انگور", caloriesPerServing: 120, servingSize: "1 پیمانه", category: "میوه" },
+      { name: "خرما", caloriesPerServing: 20, servingSize: "1 عدد", category: "میوه" },
+      { name: "انجیر", caloriesPerServing: 50, servingSize: "1 عدد متوسط", category: "میوه" },
+      { name: "هندوانه", caloriesPerServing: 40, servingSize: "1 برش", category: "میوه" },
+      { name: "طالبی", caloriesPerServing: 50, servingSize: "1 برش", category: "میوه" },
+
+      // سبزیجات
+      { name: "سالاد شیرازی", caloriesPerServing: 80, servingSize: "1 پیمانه", category: "سبزیجات" },
+      { name: "سالاد فصل", caloriesPerServing: 60, servingSize: "1 پیمانه", category: "سبزیجات" },
+      { name: "کاهو", caloriesPerServing: 15, servingSize: "1 پیمانه", category: "سبزیجات" },
+      { name: "خیار", caloriesPerServing: 16, servingSize: "1 عدد متوسط", category: "سبزیجات" },
+      { name: "گوجه فرنگی", caloriesPerServing: 22, servingSize: "1 عدد متوسط", category: "سبزیجات" },
+
+      // نوشیدنی ها
+      { name: "چای", caloriesPerServing: 2, servingSize: "1 استکان", category: "نوشیدنی" },
+      { name: "قهوه", caloriesPerServing: 5, servingSize: "1 فنجان", category: "نوشیدنی" },
+      { name: "دوغ", caloriesPerServing: 80, servingSize: "1 لیوان", category: "نوشیدنی" },
+      { name: "آب آلبالو", caloriesPerServing: 120, servingSize: "1 لیوان", category: "نوشیدنی" },
+
+      // لبنیات
+      { name: "ماست", caloriesPerServing: 100, servingSize: "1 پیمانه", category: "لبنیات" },
+      { name: "پنیر سفید", caloriesPerServing: 120, servingSize: "50 گرم", category: "لبنیات" },
+      { name: "شیر", caloriesPerServing: 150, servingSize: "1 لیوان", category: "لبنیات" },
+
+      // خشکبار
+      { name: "گردو", caloriesPerServing: 185, servingSize: "30 گرم", category: "خشکبار" },
+      { name: "بادام", caloriesPerServing: 170, servingSize: "30 گرم", category: "خشکبار" },
+      { name: "پسته", caloriesPerServing: 160, servingSize: "30 گرم", category: "خشکبار" },
+      { name: "کشمش", caloriesPerServing: 130, servingSize: "40 گرم", category: "خشکبار" },
+
+      // غذاهای کامل
+      { name: "چلو کباب", caloriesPerServing: 650, servingSize: "1 سرو", category: "غذای کامل" },
+      { name: "زرشک پلو با مرغ", caloriesPerServing: 580, servingSize: "1 سرو", category: "غذای کامل" },
+      { name: "قیمه پلو", caloriesPerServing: 520, servingSize: "1 سرو", category: "غذای کامل" },
+      { name: "لوبیا پلو", caloriesPerServing: 480, servingSize: "1 سرو", category: "غذای کامل" }
     ];
 
     persianFoods.forEach(food => {
@@ -100,14 +174,81 @@ export class MemStorage implements IStorage {
       this.foods.set(id, { ...food, id });
     });
 
-    // Add exercises
+    // Add comprehensive exercise database
     const exercises: InsertExercise[] = [
-      { name: "پرس سینه با دمبل", category: "سینه", muscleGroups: ["سینه", "سه‌سر"], caloriesPerMinute: 8 },
-      { name: "اسکات با بار", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 10 },
-      { name: "کشش پشت", category: "پشت", muscleGroups: ["پشت", "دوسر"], caloriesPerMinute: 7 },
-      { name: "پرس شانه", category: "شانه", muscleGroups: ["شانه", "سه‌سر"], caloriesPerMinute: 6 },
-      { name: "جلو بازو", category: "بازو", muscleGroups: ["دوسر"], caloriesPerMinute: 5 },
-      { name: "پشت بازو", category: "بازو", muscleGroups: ["سه‌سر"], caloriesPerMinute: 5 }
+      // سینه (Chest)
+      { name: "پرس سینه با بار صاف", category: "سینه", muscleGroups: ["سینه", "سه‌سر", "شانه جلو"], caloriesPerMinute: 8 },
+      { name: "پرس سینه با بار شیب دار", category: "سینه", muscleGroups: ["سینه بالا", "سه‌سر", "شانه جلو"], caloriesPerMinute: 8 },
+      { name: "پرس سینه با بار شیب منفی", category: "سینه", muscleGroups: ["سینه پایین", "سه‌سر"], caloriesPerMinute: 8 },
+      { name: "پرس سینه با دمبل صاف", category: "سینه", muscleGroups: ["سینه", "سه‌سر"], caloriesPerMinute: 7 },
+      { name: "پرس سینه با دمبل شیب دار", category: "سینه", muscleGroups: ["سینه بالا", "سه‌سر"], caloriesPerMinute: 7 },
+      { name: "شنا با دمبل", category: "سینه", muscleGroups: ["سینه", "شانه جلو"], caloriesPerMinute: 6 },
+      { name: "دیپ روی میله موازی", category: "سینه", muscleGroups: ["سینه پایین", "سه‌سر"], caloriesPerMinute: 9 },
+      { name: "شنای کابل", category: "سینه", muscleGroups: ["سینه"], caloriesPerMinute: 6 },
+      { name: "پوش آپ", category: "سینه", muscleGroups: ["سینه", "سه‌سر", "شانه"], caloriesPerMinute: 7 },
+      { name: "پک دک", category: "سینه", muscleGroups: ["سینه"], caloriesPerMinute: 5 },
+
+      // پشت (Back)
+      { name: "ددلیفت کلاسیک", category: "پشت", muscleGroups: ["پشت", "همسترینگ", "باسن", "تراپز"], caloriesPerMinute: 12 },
+      { name: "پول آپ", category: "پشت", muscleGroups: ["پشت", "دوسر"], caloriesPerMinute: 10 },
+      { name: "چین آپ", category: "پشت", muscleGroups: ["دوسر", "پشت"], caloriesPerMinute: 9 },
+      { name: "قایقرانی با بار", category: "پشت", muscleGroups: ["پشت میانی", "دوسر", "ترپز میانی"], caloriesPerMinute: 8 },
+      { name: "قایقرانی با دمبل", category: "پشت", muscleGroups: ["پشت", "دوسر"], caloriesPerMinute: 7 },
+      { name: "لت پول داون", category: "پشت", muscleGroups: ["پشت", "دوسر"], caloriesPerMinute: 7 },
+      { name: "کشش کابل نشسته", category: "پشت", muscleGroups: ["پشت میانی", "دوسر"], caloriesPerMinute: 6 },
+      { name: "تی بار رو", category: "پشت", muscleGroups: ["پشت", "ترپز میانی"], caloriesPerMinute: 8 },
+
+      // پا (Legs)
+      { name: "اسکات با بار پشت", category: "پا", muscleGroups: ["چهارسر", "باسن", "همسترینگ"], caloriesPerMinute: 10 },
+      { name: "اسکات با بار جلو", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 10 },
+      { name: "لانژ جلو", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 8 },
+      { name: "لانژ عقب", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 8 },
+      { name: "لگ پرس", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 9 },
+      { name: "رومانین ددلیفت", category: "پا", muscleGroups: ["همسترینگ", "باسن"], caloriesPerMinute: 8 },
+      { name: "لگ کرل", category: "پا", muscleGroups: ["همسترینگ"], caloriesPerMinute: 6 },
+      { name: "لگ اکستنشن", category: "پا", muscleGroups: ["چهارسر"], caloriesPerMinute: 6 },
+      { name: "کاف ریز", category: "پا", muscleGroups: ["ساق پا"], caloriesPerMinute: 5 },
+      { name: "بلغاری اسکات", category: "پا", muscleGroups: ["چهارسر", "باسن"], caloriesPerMinute: 9 },
+
+      // شانه (Shoulders)
+      { name: "پرس شانه با بار نشسته", category: "شانه", muscleGroups: ["شانه", "سه‌سر"], caloriesPerMinute: 7 },
+      { name: "پرس شانه با بار ایستاده", category: "شانه", muscleGroups: ["شانه", "سه‌سر", "کور"], caloriesPerMinute: 8 },
+      { name: "پرس شانه با دمبل", category: "شانه", muscleGroups: ["شانه", "سه‌سر"], caloriesPerMinute: 7 },
+      { name: "رایز جانبی", category: "شانه", muscleGroups: ["شانه میانی"], caloriesPerMinute: 5 },
+      { name: "رایز جلو", category: "شانه", muscleGroups: ["شانه جلو"], caloriesPerMinute: 5 },
+      { name: "رایز عقب", category: "شانه", muscleGroups: ["شانه عقب"], caloriesPerMinute: 5 },
+      { name: "شراگ با بار", category: "شانه", muscleGroups: ["تراپز"], caloriesPerMinute: 6 },
+      { name: "شراگ با دمبل", category: "شانه", muscleGroups: ["تراپز"], caloriesPerMinute: 6 },
+      { name: "آپ رایت رو", category: "شانه", muscleGroups: ["شانه", "تراپز"], caloriesPerMinute: 6 },
+
+      // بازو (Arms)
+      { name: "جلو بازو با بار", category: "بازو", muscleGroups: ["دوسر"], caloriesPerMinute: 5 },
+      { name: "جلو بازو با دمبل", category: "بازو", muscleGroups: ["دوسر"], caloriesPerMinute: 5 },
+      { name: "جلو بازو چکشی", category: "بازو", muscleGroups: ["دوسر", "ساعد"], caloriesPerMinute: 5 },
+      { name: "جلو بازو کابل", category: "بازو", muscleGroups: ["دوسر"], caloriesPerMinute: 5 },
+      { name: "پشت بازو روی سر", category: "بازو", muscleGroups: ["سه‌سر"], caloriesPerMinute: 5 },
+      { name: "پشت بازو کابل", category: "بازو", muscleGroups: ["سه‌سر"], caloriesPerMinute: 5 },
+      { name: "دیپ میز", category: "بازو", muscleGroups: ["سه‌سر"], caloriesPerMinute: 6 },
+      { name: "کلوز گریپ پرس", category: "بازو", muscleGroups: ["سه‌سر", "سینه"], caloriesPerMinute: 7 },
+
+      // شکم (Abs/Core)
+      { name: "پلانک کلاسیک", category: "شکم", muscleGroups: ["شکم", "کمر"], caloriesPerMinute: 4 },
+      { name: "پلانک جانبی", category: "شکم", muscleGroups: ["شکم جانبی", "کمر"], caloriesPerMinute: 4 },
+      { name: "کرانچ کلاسیک", category: "شکم", muscleGroups: ["شکم بالا"], caloriesPerMinute: 4 },
+      { name: "کرانچ معکوس", category: "شکم", muscleGroups: ["شکم پایین"], caloriesPerMinute: 5 },
+      { name: "پای آویزان", category: "شکم", muscleGroups: ["شکم پایین"], caloriesPerMinute: 6 },
+      { name: "دوچرخه", category: "شکم", muscleGroups: ["شکم", "پهلو"], caloriesPerMinute: 5 },
+      { name: "کرانچ روسی", category: "شکم", muscleGroups: ["شکم", "پهلو"], caloriesPerMinute: 6 },
+      { name: "مانتین کلایمبر", category: "شکم", muscleGroups: ["شکم", "کور"], caloriesPerMinute: 8 },
+
+      // کاردیو (Cardio)
+      { name: "دویدن روی ترید میل", category: "کاردیو", muscleGroups: ["پا", "قلب"], caloriesPerMinute: 12 },
+      { name: "دوچرخه ثابت", category: "کاردیو", muscleGroups: ["پا", "قلب"], caloriesPerMinute: 10 },
+      { name: "ایلیپتیکال", category: "کاردیو", muscleGroups: ["تمام بدن", "قلب"], caloriesPerMinute: 11 },
+      { name: "طناب زدن", category: "کاردیو", muscleGroups: ["تمام بدن", "ساق پا"], caloriesPerMinute: 13 },
+      { name: "برپی", category: "کاردیو", muscleGroups: ["تمام بدن"], caloriesPerMinute: 15 },
+      { name: "جامپینگ جک", category: "کاردیو", muscleGroups: ["تمام بدن"], caloriesPerMinute: 10 },
+      { name: "های نی", category: "کاردیو", muscleGroups: ["پا", "شکم"], caloriesPerMinute: 11 }
     ];
 
     exercises.forEach(exercise => {
