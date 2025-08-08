@@ -247,7 +247,13 @@ export class MemStorage implements IStorage {
 
   async createWorkoutSet(insertSet: InsertWorkoutSet): Promise<WorkoutSet> {
     const id = randomUUID();
-    const set: WorkoutSet = { ...insertSet, id, completedAt: new Date() };
+    const set: WorkoutSet = { 
+      ...insertSet, 
+      id, 
+      completedAt: new Date(),
+      sets: insertSet.sets || 1,
+      rpe: insertSet.rpe || null
+    };
     this.workoutSets.set(id, set);
     return set;
   }

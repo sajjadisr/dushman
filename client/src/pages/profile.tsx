@@ -139,7 +139,7 @@ export default function Profile() {
 
         {/* App Info */}
         <div className="text-center text-xs text-gray-500 mt-8">
-          فود کالری نسخه 1.0.0<br />
+          FitFarsi نسخه 1.0.0<br />
           ساخته شده با ❤️ برای سلامت شما
         </div>
       </main>

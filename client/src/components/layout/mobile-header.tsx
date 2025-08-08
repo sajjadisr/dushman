@@ -8,9 +8,9 @@ export default function MobileHeader() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">ف</span>
+              <span className="text-white text-sm font-bold">F</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">فود کالری</h1>
+            <h1 className="text-xl font-bold text-gray-900">FitFarsi</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button 

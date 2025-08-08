@@ -44,6 +44,8 @@ export const workoutSets = pgTable("workout_sets", {
   exerciseId: varchar("exercise_id").references(() => exercises.id).notNull(),
   weight: real("weight"),
   reps: integer("reps"),
+  sets: integer("sets").default(1),
+  rpe: integer("rpe"), // Rate of Perceived Exertion (1-10)
   duration: integer("duration"), // in seconds for cardio
   restTime: integer("rest_time"), // in seconds
   notes: text("notes"),

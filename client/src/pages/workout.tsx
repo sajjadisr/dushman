@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MobileHeader from "@/components/layout/mobile-header";
+import WorkoutSetModal from "@/components/workout/workout-set-modal";
+import WorkoutProgressChart from "@/components/workout/workout-progress-chart";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Dumbbell, Trash2, Clock } from "lucide-react";
+import { Plus, Dumbbell, Trash2, Clock, BarChart3 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
+import type { Exercise } from "@/lib/exercises";
 
 export default function Workout() {
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
   
   // Mock user ID - in a real app, this would come from authentication
@@ -24,15 +29,6 @@ export default function Workout() {
     queryKey: ["/api/workout-sets", userId, today],
   });
 
-  const addWorkoutSetMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/workout-sets", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/workout-sets", userId, today] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard-stats"] });
-      toast({ description: "ست تمرین ثبت شد" });
-    },
-  });
-
   const deleteWorkoutSetMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/workout-sets/${id}`),
     onSuccess: () => {
@@ -42,19 +38,9 @@ export default function Workout() {
     },
   });
 
-  const handleAddSet = (exerciseId: string) => {
-    // In a real app, this would open a modal for detailed input
-    const weight = 20; // Mock weight
-    const reps = 12; // Mock reps
-    const duration = 60; // Mock duration in seconds
-    
-    addWorkoutSetMutation.mutate({
-      userId,
-      exerciseId,
-      weight,
-      reps,
-      duration,
-    });
+  const handleExerciseSelect = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+    setIsModalOpen(true);
   };
 
   const categories = [...new Set(exercises.map((ex: any) => ex.category))];
@@ -67,6 +53,16 @@ export default function Workout() {
   const workoutDuration = workoutSets.reduce((sum: number, set: any) => {
     return sum + (set.duration || 60);
   }, 0);
+
+  // Group sets by exercise for better display
+  const groupedSets = workoutSets.reduce((groups: any, set: any) => {
+    const exerciseName = set.exercise?.name || 'نامشخص';
+    if (!groups[exerciseName]) {
+      groups[exerciseName] = [];
+    }
+    groups[exerciseName].push(set);
+    return groups;
+  }, {});
 
   return (
     <div className="pb-20">
@@ -87,6 +83,15 @@ export default function Workout() {
           </div>
         </Card>
 
+        {/* Workout Progress Chart */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            نمودار پیشرفت
+          </h2>
+          <WorkoutProgressChart userId={userId} />
+        </div>
+
         {/* Today's Workout Sets */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
@@ -94,38 +99,63 @@ export default function Workout() {
             تمرین‌های امروز
           </h2>
           
-          {workoutSets.length > 0 ? (
-            <div className="space-y-3">
-              {workoutSets.map((set: any) => (
-                <Card key={set.id} className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-medium">{set.exercise?.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {set.weight ? `${set.weight} کیلو × ` : ''}
-                        {set.reps} تکرار
-                        {set.duration && ` - ${Math.round(set.duration / 60)} دقیقه`}
-                      </p>
-                      <Badge variant="outline" className="mt-2">
-                        {set.exercise?.category}
+          {Object.keys(groupedSets).length > 0 ? (
+            <div className="space-y-4">
+              {Object.entries(groupedSets).map(([exerciseName, sets]: [string, any]) => (
+                <Card key={exerciseName} className="p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-medium text-gray-900">{exerciseName}</h3>
+                      <Badge variant="outline" className="mt-1">
+                        {sets[0]?.exercise?.category || 'نامشخص'}
                       </Badge>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => deleteWorkoutSetMutation.mutate(set.id)}
+                      onClick={() => {
+                        // Delete all sets for this exercise
+                        sets.forEach((set: any) => deleteWorkoutSetMutation.mutate(set.id));
+                      }}
                       className="text-red-500 hover:text-red-700"
-                      data-testid={`button-delete-set-${set.id}`}
+                      data-testid={`button-delete-exercise-${exerciseName}`}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {sets.map((set: any, index: number) => (
+                      <div key={set.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-medium text-gray-600">ست {index + 1}</span>
+                          <div className="text-sm">
+                            {set.weight && <span className="font-medium">{set.weight} کیلو</span>}
+                            {set.weight && set.reps && <span className="mx-1">×</span>}
+                            {set.reps && <span>{set.reps} تکرار</span>}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {set.rpe && (
+                            <Badge variant="secondary" className="text-xs">
+                              RPE {set.rpe}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-gray-500">
+                            {Math.round((set.duration || 60) / 60)} دقیقه
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </Card>
               ))}
             </div>
           ) : (
-            <Card className="p-4 text-center text-gray-500">
-              هنوز تمرینی ثبت نشده
+            <Card className="p-6 text-center text-gray-500">
+              <div className="text-4xl mb-2">💪</div>
+              <p>هنوز تمرینی ثبت نشده</p>
+              <p className="text-sm mt-1">از کتابخانه تمرینات زیر انتخاب کنید</p>
             </Card>
           )}
         </div>
@@ -138,8 +168,8 @@ export default function Workout() {
           </h2>
 
           <Tabs defaultValue={categories[0]} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 3)}, minmax(0, 1fr))` }}>
-              {categories.slice(0, 3).map((category: string) => (
+            <TabsList className="grid w-full mb-4" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 4)}, minmax(0, 1fr))` }}>
+              {categories.slice(0, 4).map((category: string) => (
                 <TabsTrigger key={category} value={category} className="text-sm">
                   {category}
                 </TabsTrigger>
@@ -148,28 +178,36 @@ export default function Workout() {
 
             {categories.map((category: string) => (
               <TabsContent key={category} value={category}>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {exercises
                     .filter((exercise: any) => exercise.category === category)
                     .map((exercise: any) => (
-                      <Card key={exercise.id} className="p-3">
-                        <div className="flex items-center justify-between">
+                      <Card key={exercise.id} className="p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h4 className="font-medium">{exercise.name}</h4>
-                            <p className="text-sm text-gray-600">
-                              {exercise.muscleGroups.join('، ')}
-                            </p>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {exercise.caloriesPerMinute} کالری در دقیقه
+                            <h4 className="font-medium text-gray-900 mb-1">{exercise.name}</h4>
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              {exercise.muscleGroups.map((muscle: string) => (
+                                <Badge key={muscle} variant="outline" className="text-xs">
+                                  {muscle}
+                                </Badge>
+                              ))}
                             </div>
+                            <div className="text-xs text-gray-500">
+                              {exercise.caloriesPerMinute} کالری در دقیقه • سطح {exercise.difficulty}
+                            </div>
+                            {exercise.description && (
+                              <p className="text-xs text-gray-600 mt-1">{exercise.description}</p>
+                            )}
                           </div>
                           <Button
                             size="sm"
-                            onClick={() => handleAddSet(exercise.id)}
-                            disabled={addWorkoutSetMutation.isPending}
+                            onClick={() => handleExerciseSelect(exercise)}
+                            className="shrink-0"
                             data-testid={`button-add-exercise-${exercise.id}`}
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-4 w-4 ml-1" />
+                            شروع
                           </Button>
                         </div>
                       </Card>
@@ -180,6 +218,13 @@ export default function Workout() {
           </Tabs>
         </div>
       </main>
+
+      <WorkoutSetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        exercise={selectedExercise}
+        userId={userId}
+      />
     </div>
   );
 }
