@@ -4,8 +4,7 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/fitness-tracker/' : '/',
-  base: process.env.NODE_ENV === 'production' ? '/fitness-app/' : '/', // Replace with your repository name
+  base: process.env.NODE_ENV === 'production' ? '/dushman/' : '/',
   plugins: [
     react(),
     runtimeErrorOverlay(),
