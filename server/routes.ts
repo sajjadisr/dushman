@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertFoodEntrySchema, insertWorkoutSetSchema, insertWeightEntrySchema, insertWorkoutSchema } from "@shared/schema";
+import { insertFoodEntrySchema, insertWorkoutSetSchema, insertWeightEntrySchema, insertWorkoutSchema, insertWorkoutPlanSchema, insertWorkoutPlanExerciseSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -176,6 +176,179 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "داده‌های نامعتبر", errors: error.errors });
       }
       res.status(500).json({ message: "خطا در ثبت وزن" });
+    }
+  });
+
+  // Workout Plan routes
+  app.get("/api/workout-plans", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      if (!userId) {
+        return res.status(400).json({ message: "شناسه کاربر الزامی است" });
+      }
+
+      const plans = await storage.getWorkoutPlansByUser(userId as string);
+      res.json(plans);
+    } catch (error) {
+      res.status(500).json({ message: "خطا در دریافت برنامه‌های تمرین" });
+    }
+  });
+
+  app.get("/api/workout-plans/active", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      if (!userId) {
+        return res.status(400).json({ message: "شناسه کاربر الزامی است" });
+      }
+
+      const activePlan = await storage.getActiveWorkoutPlan(userId as string);
+      if (!activePlan) {
+        return res.status(404).json({ message: "برنامه تمرین فعال یافت نشد" });
+      }
+
+      // Get exercises for the active plan
+      const exercises = await storage.getWorkoutPlanExercises(activePlan.id);
+      const exercisesWithDetails = await Promise.all(
+        exercises.map(async (planExercise) => {
+          const exercise = await storage.getExercise(planExercise.exerciseId);
+          return { ...planExercise, exercise };
+        })
+      );
+
+      res.json({ ...activePlan, exercises: exercisesWithDetails });
+    } catch (error) {
+      res.status(500).json({ message: "خطا در دریافت برنامه تمرین فعال" });
+    }
+  });
+
+  app.post("/api/workout-plans", async (req, res) => {
+    try {
+      const validatedData = insertWorkoutPlanSchema.parse(req.body);
+      const plan = await storage.createWorkoutPlan(validatedData);
+      res.json(plan);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "داده‌های نامعتبر", errors: error.errors });
+      }
+      res.status(500).json({ message: "خطا در ایجاد برنامه تمرین" });
+    }
+  });
+
+  app.put("/api/workout-plans/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const plan = await storage.updateWorkoutPlan(id, req.body);
+      
+      if (!plan) {
+        return res.status(404).json({ message: "برنامه تمرین یافت نشد" });
+      }
+
+      res.json(plan);
+    } catch (error) {
+      res.status(500).json({ message: "خطا در به‌روزرسانی برنامه تمرین" });
+    }
+  });
+
+  app.delete("/api/workout-plans/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteWorkoutPlan(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "برنامه تمرین یافت نشد" });
+      }
+
+      res.json({ message: "برنامه تمرین حذف شد" });
+    } catch (error) {
+      res.status(500).json({ message: "خطا در حذف برنامه تمرین" });
+    }
+  });
+
+  app.put("/api/workout-plans/:id/activate", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "شناسه کاربر الزامی است" });
+      }
+
+      const success = await storage.setActiveWorkoutPlan(userId, id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "برنامه تمرین یافت نشد" });
+      }
+
+      res.json({ message: "برنامه تمرین فعال شد" });
+    } catch (error) {
+      res.status(500).json({ message: "خطا در فعال‌سازی برنامه تمرین" });
+    }
+  });
+
+  // Workout Plan Exercise routes
+  app.get("/api/workout-plans/:planId/exercises", async (req, res) => {
+    try {
+      const { planId } = req.params;
+      const exercises = await storage.getWorkoutPlanExercises(planId);
+      
+      // Populate with exercise details
+      const exercisesWithDetails = await Promise.all(
+        exercises.map(async (planExercise) => {
+          const exercise = await storage.getExercise(planExercise.exerciseId);
+          return { ...planExercise, exercise };
+        })
+      );
+
+      res.json(exercisesWithDetails);
+    } catch (error) {
+      res.status(500).json({ message: "خطا در دریافت تمرینات برنامه" });
+    }
+  });
+
+  app.post("/api/workout-plan-exercises", async (req, res) => {
+    try {
+      const validatedData = insertWorkoutPlanExerciseSchema.parse(req.body);
+      const exercise = await storage.createWorkoutPlanExercise(validatedData);
+      
+      // Get exercise details for response
+      const exerciseDetails = await storage.getExercise(exercise.exerciseId);
+      res.json({ ...exercise, exercise: exerciseDetails });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "داده‌های نامعتبر", errors: error.errors });
+      }
+      res.status(500).json({ message: "خطا در افزودن تمرین به برنامه" });
+    }
+  });
+
+  app.put("/api/workout-plan-exercises/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const exercise = await storage.updateWorkoutPlanExercise(id, req.body);
+      
+      if (!exercise) {
+        return res.status(404).json({ message: "تمرین برنامه یافت نشد" });
+      }
+
+      const exerciseDetails = await storage.getExercise(exercise.exerciseId);
+      res.json({ ...exercise, exercise: exerciseDetails });
+    } catch (error) {
+      res.status(500).json({ message: "خطا در به‌روزرسانی تمرین برنامه" });
+    }
+  });
+
+  app.delete("/api/workout-plan-exercises/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteWorkoutPlanExercise(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "تمرین برنامه یافت نشد" });
+      }
+
+      res.json({ message: "تمرین از برنامه حذف شد" });
+    } catch (error) {
+      res.status(500).json({ message: "خطا در حذف تمرین از برنامه" });
     }
   });
 

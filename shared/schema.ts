@@ -69,6 +69,27 @@ export const weightEntries = pgTable("weight_entries", {
   recordedAt: timestamp("recorded_at").defaultNow(),
 });
 
+export const workoutPlans = pgTable("workout_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const workoutPlanExercises = pgTable("workout_plan_exercises", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workoutPlanId: varchar("workout_plan_id").references(() => workoutPlans.id).notNull(),
+  exerciseId: varchar("exercise_id").references(() => exercises.id).notNull(),
+  order: integer("order").notNull(), // Exercise order in the plan
+  targetSets: integer("target_sets").default(3),
+  targetReps: integer("target_reps").default(12),
+  targetWeight: real("target_weight"),
+  restTime: integer("rest_time").default(60), // in seconds
+  notes: text("notes"),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -104,6 +125,15 @@ export const insertWeightEntrySchema = createInsertSchema(weightEntries).omit({
   recordedAt: true,
 });
 
+export const insertWorkoutPlanSchema = createInsertSchema(workoutPlans).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkoutPlanExerciseSchema = createInsertSchema(workoutPlanExercises).omit({
+  id: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -125,3 +155,9 @@ export type InsertWorkout = z.infer<typeof insertWorkoutSchema>;
 
 export type WeightEntry = typeof weightEntries.$inferSelect;
 export type InsertWeightEntry = z.infer<typeof insertWeightEntrySchema>;
+
+export type WorkoutPlan = typeof workoutPlans.$inferSelect;
+export type InsertWorkoutPlan = z.infer<typeof insertWorkoutPlanSchema>;
+
+export type WorkoutPlanExercise = typeof workoutPlanExercises.$inferSelect;
+export type InsertWorkoutPlanExercise = z.infer<typeof insertWorkoutPlanExerciseSchema>;

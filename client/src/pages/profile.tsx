@@ -2,9 +2,14 @@ import MobileHeader from "@/components/layout/mobile-header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Settings, Target, Bell, HelpCircle, LogOut } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useTheme } from "@/contexts/theme-context";
+import { User, Settings, Target, Bell, HelpCircle, LogOut, Moon, Sun } from "lucide-react";
 
 export default function Profile() {
+  const { theme, setTheme } = useTheme();
+  
   // Mock user data
   const userData = {
     name: "کاربر نمونه",
@@ -97,6 +102,39 @@ export default function Profile() {
           </div>
         </Card>
 
+        {/* Theme Settings */}
+        <Card className="p-4 mb-6">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            تنظیمات نمایش
+          </h2>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {theme === "dark" ? (
+                <Moon className="h-5 w-5 text-foreground" />
+              ) : (
+                <Sun className="h-5 w-5 text-foreground" />
+              )}
+              <Label htmlFor="theme-toggle" className="text-base font-medium">
+                {theme === "dark" ? "حالت تاریک" : "حالت روشن"}
+              </Label>
+            </div>
+            <Switch
+              id="theme-toggle"
+              checked={theme === "dark"}
+              onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+              data-testid="switch-theme-toggle"
+            />
+          </div>
+          
+          <p className="text-sm text-muted-foreground mt-2">
+            {theme === "dark" 
+              ? "حالت تاریک برای استفاده در شب و کاهش خستگی چشم" 
+              : "حالت روشن برای استفاده در روز و نور کافی"}
+          </p>
+        </Card>
+
         {/* Settings Menu */}
         <div className="space-y-2 mb-6">
           <Button 
@@ -105,7 +143,7 @@ export default function Profile() {
             data-testid="button-settings"
           >
             <Settings className="ml-3 h-5 w-5" />
-            تنظیمات
+            تنظیمات حساب
           </Button>
 
           <Button 

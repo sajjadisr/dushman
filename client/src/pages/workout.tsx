@@ -3,11 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import MobileHeader from "@/components/layout/mobile-header";
 import WorkoutSetModal from "@/components/workout/workout-set-modal";
 import WorkoutProgressChart from "@/components/workout/workout-progress-chart";
+import WorkoutPlanModal from "@/components/workout/workout-plan-modal";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Dumbbell, Trash2, Clock, BarChart3 } from "lucide-react";
+import { Plus, Dumbbell, Trash2, Clock, BarChart3, Target, PlayCircle, Settings } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import type { Exercise } from "@/lib/exercises";
@@ -15,6 +16,8 @@ import type { Exercise } from "@/lib/exercises";
 export default function Workout() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [followingPlan, setFollowingPlan] = useState(false);
   const queryClient = useQueryClient();
   
   // Mock user ID - in a real app, this would come from authentication
@@ -27,6 +30,17 @@ export default function Workout() {
 
   const { data: workoutSets = [], isLoading: setsLoading } = useQuery({
     queryKey: ["/api/workout-sets", userId, today],
+  });
+
+  const { data: activePlan } = useQuery({
+    queryKey: ["/api/workout-plans/active", userId],
+    queryFn: () => apiRequest("GET", `/api/workout-plans/active?userId=${userId}`),
+    retry: false,
+  });
+
+  const { data: workoutPlans = [] } = useQuery({
+    queryKey: ["/api/workout-plans", userId],
+    queryFn: () => apiRequest("GET", `/api/workout-plans?userId=${userId}`),
   });
 
   const deleteWorkoutSetMutation = useMutation({
@@ -69,6 +83,93 @@ export default function Workout() {
       <MobileHeader />
       
       <main className="px-4 py-6">
+        {/* Active Workout Plan */}
+        {activePlan && (
+          <Card className="p-4 mb-6 border-primary/20 bg-primary/5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                برنامه فعال: {activePlan.name}
+              </h2>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setFollowingPlan(!followingPlan)}
+                data-testid="button-toggle-plan-follow"
+              >
+                <PlayCircle className="h-4 w-4 mr-1" />
+                {followingPlan ? "توقف دنبال کردن" : "دنبال کردن برنامه"}
+              </Button>
+            </div>
+            
+            {activePlan.description && (
+              <p className="text-sm text-muted-foreground mb-3">{activePlan.description}</p>
+            )}
+            
+            {followingPlan && activePlan.exercises && (
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm">تمرینات امروز:</h3>
+                {activePlan.exercises.map((planEx: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between bg-white/80 rounded-lg p-3">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{planEx.exercise?.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {planEx.targetSets} ست × {planEx.targetReps} تکرار
+                        {planEx.targetWeight && ` × ${planEx.targetWeight} کیلو`}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (planEx.exercise) {
+                          setSelectedExercise({
+                            ...planEx.exercise,
+                            targetSets: planEx.targetSets,
+                            targetReps: planEx.targetReps,
+                            targetWeight: planEx.targetWeight,
+                          });
+                          setIsModalOpen(true);
+                        }
+                      }}
+                      data-testid={`button-start-plan-exercise-${index}`}
+                    >
+                      شروع
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Workout Plan Management */}
+        <Card className="p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              مدیریت برنامه تمرین
+            </h2>
+            <Button
+              onClick={() => setIsPlanModalOpen(true)}
+              size="sm"
+              data-testid="button-create-plan"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              برنامه جدید
+            </Button>
+          </div>
+          
+          <div className="text-sm text-muted-foreground">
+            {activePlan
+              ? `برنامه فعال: ${activePlan.name}`
+              : "هیچ برنامه فعالی تنظیم نشده"}
+            {workoutPlans.length > 0 && (
+              <> • {workoutPlans.length} برنامه ایجاد شده</>
+            )}
+          </div>
+        </Card>
+
         {/* Today's Workout Summary */}
         <Card className="p-4 mb-6">
           <div className="grid grid-cols-2 gap-4 text-center">
@@ -161,68 +262,82 @@ export default function Workout() {
         </div>
 
         {/* Exercise Library */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Dumbbell className="h-5 w-5" />
-            کتابخانه تمرینات
-          </h2>
+        {!followingPlan && (
+          <div>
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Dumbbell className="h-5 w-5" />
+              {activePlan ? "انتخاب تمرین آزاد" : "کتابخانه تمرینات"}
+            </h2>
+            
+            {activePlan && (
+              <p className="text-sm text-muted-foreground mb-4">
+                برای دنبال کردن برنامه فعال، روی "دنبال کردن برنامه" کلیک کنید یا تمرین دلخواه انتخاب کنید.
+              </p>
+            )}
 
-          <Tabs defaultValue={categories[0]} className="w-full">
-            <TabsList className="grid w-full mb-4" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 4)}, minmax(0, 1fr))` }}>
-              {categories.slice(0, 4).map((category: string) => (
-                <TabsTrigger key={category} value={category} className="text-sm">
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+            <Tabs defaultValue={categories[0]} className="w-full">
+              <TabsList className="grid w-full mb-4" style={{ gridTemplateColumns: `repeat(${Math.min(categories.length, 4)}, minmax(0, 1fr))` }}>
+                {categories.slice(0, 4).map((category: string) => (
+                  <TabsTrigger key={category} value={category} className="text-sm">
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
 
-            {categories.map((category: string) => (
-              <TabsContent key={category} value={category}>
-                <div className="space-y-3">
-                  {exercises
-                    .filter((exercise: any) => exercise.category === category)
-                    .map((exercise: any) => (
-                      <Card key={exercise.id} className="p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 mb-1">{exercise.name}</h4>
-                            <div className="flex flex-wrap gap-1 mb-2">
-                              {exercise.muscleGroups.map((muscle: string) => (
-                                <Badge key={muscle} variant="outline" className="text-xs">
-                                  {muscle}
-                                </Badge>
-                              ))}
+              {categories.map((category: string) => (
+                <TabsContent key={category} value={category}>
+                  <div className="space-y-3">
+                    {exercises
+                      .filter((exercise: any) => exercise.category === category)
+                      .map((exercise: any) => (
+                        <Card key={exercise.id} className="p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-foreground mb-1">{exercise.name}</h4>
+                              <div className="flex flex-wrap gap-1 mb-2">
+                                {exercise.muscleGroups.map((muscle: string) => (
+                                  <Badge key={muscle} variant="outline" className="text-xs">
+                                    {muscle}
+                                  </Badge>
+                                ))}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {exercise.caloriesPerMinute} کالری در دقیقه • سطح {exercise.difficulty}
+                              </div>
+                              {exercise.description && (
+                                <p className="text-xs text-muted-foreground mt-1">{exercise.description}</p>
+                              )}
                             </div>
-                            <div className="text-xs text-gray-500">
-                              {exercise.caloriesPerMinute} کالری در دقیقه • سطح {exercise.difficulty}
-                            </div>
-                            {exercise.description && (
-                              <p className="text-xs text-gray-600 mt-1">{exercise.description}</p>
-                            )}
+                            <Button
+                              size="sm"
+                              onClick={() => handleExerciseSelect(exercise)}
+                              className="shrink-0"
+                              data-testid={`button-add-exercise-${exercise.id}`}
+                            >
+                              <Plus className="h-4 w-4 ml-1" />
+                              شروع
+                            </Button>
                           </div>
-                          <Button
-                            size="sm"
-                            onClick={() => handleExerciseSelect(exercise)}
-                            className="shrink-0"
-                            data-testid={`button-add-exercise-${exercise.id}`}
-                          >
-                            <Plus className="h-4 w-4 ml-1" />
-                            شروع
-                          </Button>
-                        </div>
-                      </Card>
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
+                        </Card>
+                      ))}
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        )}
       </main>
 
       <WorkoutSetModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         exercise={selectedExercise}
+        userId={userId}
+      />
+      
+      <WorkoutPlanModal
+        isOpen={isPlanModalOpen}
+        onClose={() => setIsPlanModalOpen(false)}
         userId={userId}
       />
     </div>

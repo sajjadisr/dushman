@@ -12,7 +12,11 @@ import {
   type Workout,
   type InsertWorkout,
   type WeightEntry,
-  type InsertWeightEntry
+  type InsertWeightEntry,
+  type WorkoutPlan,
+  type InsertWorkoutPlan,
+  type WorkoutPlanExercise,
+  type InsertWorkoutPlanExercise
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -58,6 +62,21 @@ export interface IStorage {
   getWeightEntriesByUser(userId: string): Promise<WeightEntry[]>;
   createWeightEntry(entry: InsertWeightEntry): Promise<WeightEntry>;
   deleteWeightEntry(id: string): Promise<boolean>;
+  
+  // Workout plan operations
+  getWorkoutPlan(id: string): Promise<WorkoutPlan | undefined>;
+  getWorkoutPlansByUser(userId: string): Promise<WorkoutPlan[]>;
+  getActiveWorkoutPlan(userId: string): Promise<WorkoutPlan | undefined>;
+  createWorkoutPlan(plan: InsertWorkoutPlan): Promise<WorkoutPlan>;
+  updateWorkoutPlan(id: string, updates: Partial<WorkoutPlan>): Promise<WorkoutPlan | undefined>;
+  deleteWorkoutPlan(id: string): Promise<boolean>;
+  setActiveWorkoutPlan(userId: string, planId: string): Promise<boolean>;
+  
+  // Workout plan exercise operations
+  getWorkoutPlanExercises(planId: string): Promise<WorkoutPlanExercise[]>;
+  createWorkoutPlanExercise(exercise: InsertWorkoutPlanExercise): Promise<WorkoutPlanExercise>;
+  updateWorkoutPlanExercise(id: string, updates: Partial<WorkoutPlanExercise>): Promise<WorkoutPlanExercise | undefined>;
+  deleteWorkoutPlanExercise(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -68,6 +87,8 @@ export class MemStorage implements IStorage {
   private workoutSets: Map<string, WorkoutSet>;
   private workouts: Map<string, Workout>;
   private weightEntries: Map<string, WeightEntry>;
+  private workoutPlans: Map<string, WorkoutPlan>;
+  private workoutPlanExercises: Map<string, WorkoutPlanExercise>;
 
   constructor() {
     this.users = new Map();
@@ -77,6 +98,8 @@ export class MemStorage implements IStorage {
     this.workoutSets = new Map();
     this.workouts = new Map();
     this.weightEntries = new Map();
+    this.workoutPlans = new Map();
+    this.workoutPlanExercises = new Map();
     
     // Initialize with some Persian foods and exercises
     this.initializeDefaultData();
@@ -453,6 +476,93 @@ export class MemStorage implements IStorage {
 
   async deleteWeightEntry(id: string): Promise<boolean> {
     return this.weightEntries.delete(id);
+  }
+
+  // Workout plan operations
+  async getWorkoutPlan(id: string): Promise<WorkoutPlan | undefined> {
+    return this.workoutPlans.get(id);
+  }
+
+  async getWorkoutPlansByUser(userId: string): Promise<WorkoutPlan[]> {
+    return Array.from(this.workoutPlans.values())
+      .filter(plan => plan.userId === userId)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+  }
+
+  async getActiveWorkoutPlan(userId: string): Promise<WorkoutPlan | undefined> {
+    return Array.from(this.workoutPlans.values())
+      .find(plan => plan.userId === userId && plan.isActive);
+  }
+
+  async createWorkoutPlan(insertPlan: InsertWorkoutPlan): Promise<WorkoutPlan> {
+    const id = randomUUID();
+    const plan: WorkoutPlan = { 
+      ...insertPlan, 
+      id, 
+      createdAt: new Date(),
+      isActive: insertPlan.isActive || false
+    };
+    this.workoutPlans.set(id, plan);
+    return plan;
+  }
+
+  async updateWorkoutPlan(id: string, updates: Partial<WorkoutPlan>): Promise<WorkoutPlan | undefined> {
+    const plan = this.workoutPlans.get(id);
+    if (!plan) return undefined;
+    const updatedPlan = { ...plan, ...updates };
+    this.workoutPlans.set(id, updatedPlan);
+    return updatedPlan;
+  }
+
+  async deleteWorkoutPlan(id: string): Promise<boolean> {
+    // Also delete associated exercises
+    const exercises = Array.from(this.workoutPlanExercises.values())
+      .filter(exercise => exercise.workoutPlanId === id);
+    exercises.forEach(exercise => this.workoutPlanExercises.delete(exercise.id));
+    
+    return this.workoutPlans.delete(id);
+  }
+
+  async setActiveWorkoutPlan(userId: string, planId: string): Promise<boolean> {
+    // First, deactivate all existing plans for this user
+    Array.from(this.workoutPlans.values())
+      .filter(plan => plan.userId === userId && plan.isActive)
+      .forEach(plan => {
+        this.workoutPlans.set(plan.id, { ...plan, isActive: false });
+      });
+
+    // Then activate the specified plan
+    const plan = this.workoutPlans.get(planId);
+    if (!plan || plan.userId !== userId) return false;
+    
+    this.workoutPlans.set(planId, { ...plan, isActive: true });
+    return true;
+  }
+
+  // Workout plan exercise operations
+  async getWorkoutPlanExercises(planId: string): Promise<WorkoutPlanExercise[]> {
+    return Array.from(this.workoutPlanExercises.values())
+      .filter(exercise => exercise.workoutPlanId === planId)
+      .sort((a, b) => a.order - b.order);
+  }
+
+  async createWorkoutPlanExercise(insertExercise: InsertWorkoutPlanExercise): Promise<WorkoutPlanExercise> {
+    const id = randomUUID();
+    const exercise: WorkoutPlanExercise = { ...insertExercise, id };
+    this.workoutPlanExercises.set(id, exercise);
+    return exercise;
+  }
+
+  async updateWorkoutPlanExercise(id: string, updates: Partial<WorkoutPlanExercise>): Promise<WorkoutPlanExercise | undefined> {
+    const exercise = this.workoutPlanExercises.get(id);
+    if (!exercise) return undefined;
+    const updatedExercise = { ...exercise, ...updates };
+    this.workoutPlanExercises.set(id, updatedExercise);
+    return updatedExercise;
+  }
+
+  async deleteWorkoutPlanExercise(id: string): Promise<boolean> {
+    return this.workoutPlanExercises.delete(id);
   }
 }
 
