@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فود کالری - ردیاب کالری</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        success: '#10B981',
+                        error: '#EF4444'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Tahoma', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: MobileHeader -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-utensils text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900">فود کالری</h1>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 text-gray-600 hover:text-primary transition-colors">
+                        <i class="fas fa-bell text-lg"></i>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:text-primary transition-colors">
+                        <i class="fas fa-user-circle text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: MobileHeader -->
+
+    <!-- @COMPONENT: MainContent -->
+    <main class="pb-20">
+        <!-- Daily Summary Cards -->
+        <!-- @COMPONENT: DailySummarySection -->
+        <section class="px-4 py-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">خلاصه امروز</h2>
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-fire text-primary text-sm"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-600">کالری مصرفی</span>
+                    </div>
+                    <div class="flex items-end gap-1">
+                        <span class="text-2xl font-bold text-gray-900" data-bind="dailyCalories">1,458</span>
+                        <span class="text-sm text-gray-500 mb-1">کالری</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">هدف: 1,800 کالری</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-dumbbell text-secondary text-sm"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-600">کالری سوخته</span>
+                    </div>
+                    <div class="flex items-end gap-1">
+                        <span class="text-2xl font-bold text-gray-900" data-bind="burnedCalories">324</span>
+                        <span class="text-sm text-gray-500 mb-1">کالری</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">45 دقیقه تمرین</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">پیشرفت روزانه</span>
+                    <span class="text-sm text-primary font-semibold">81%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-l from-primary to-secondary h-2 rounded-full" style="width: 81%"></div>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">342 کالری تا هدف</div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: DailySummarySection -->
+
+        <!-- Quick Actions -->
+        <!-- @COMPONENT: QuickActionsSection -->
+        <section class="px-4 pb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">عملیات سریع</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <button class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow" data-event="click:openFoodLogger">
+                    <div class="w-12 h-12 bg-gradient-to-r from-accent to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-plus text-white text-lg"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-center mb-1">افزودن غذا</h3>
+                    <p class="text-xs text-gray-500 text-center">ثبت وعده غذایی</p>
+                </button>
+
+                <button class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow" data-event="click:openWorkoutLogger">
+                    <div class="w-12 h-12 bg-gradient-to-r from-secondary to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-dumbbell text-white text-lg"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 text-center mb-1">ثبت تمرین</h3>
+                    <p class="text-xs text-gray-500 text-center">فعالیت ورزشی</p>
+                </button>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: QuickActionsSection -->
+
+        <!-- Recent Meals -->
+        <!-- @COMPONENT: RecentMealsSection -->
+        <section class="px-4 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">وعده‌های اخیر</h2>
+                <button class="text-primary text-sm font-medium" data-event="click:viewAllMeals">مشاهده همه</button>
+            </div>
+            
+            <!-- @MAP: recentMeals.map(meal => ( -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
+                <div class="flex items-start gap-3">
+                    <!-- A bowl of traditional Persian rice with saffron and herbs -->
+                    <img src="https://pixabay.com/get/gb310e0cd83270d1bc8c25377b228efff154372465fd91de6ff52e93a8976fa2b99ccb2dff5d66a1233d9c5b90dcc6498e76c32b03859b7782a5b9002b77e53a5_1280.jpg" alt="Persian saffron rice" class="w-16 h-16 rounded-xl object-cover" data-mock-image="true" />
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="meal.name">برنج زعفرانی</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="meal.portion">1 پیمانه (150 گرم)</p>
+                                <span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mt-2">ناهار</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-gray-900" data-bind="meal.calories">280</span>
+                                <span class="text-sm text-gray-500">کالری</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
+                <div class="flex items-start gap-3">
+                    <!-- A traditional Persian kabab koobideh with tomatoes on a plate -->
+                    <img src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Persian kabab koobideh" class="w-16 h-16 rounded-xl object-cover" data-mock-image="true" />
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="meal.name">کباب کوبیده</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="meal.portion">2 سیخ (200 گرم)</p>
+                                <span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mt-2">ناهار</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-gray-900" data-bind="meal.calories">450</span>
+                                <span class="text-sm text-gray-500">کالری</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </section>
+        <!-- @END_COMPONENT: RecentMealsSection -->
+
+        <!-- Workout History -->
+        <!-- @COMPONENT: WorkoutHistorySection -->
+        <section class="px-4 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">تمرین‌های اخیر</h2>
+                <button class="text-primary text-sm font-medium" data-event="click:viewAllWorkouts">مشاهده همه</button>
+            </div>
+
+            <!-- @MAP: recentWorkouts.map(workout => ( -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
+                <div class="flex items-start gap-3">
+                    <!-- A person doing dumbbell exercises in a modern gym -->
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Dumbbell workout" class="w-16 h-16 rounded-xl object-cover" data-mock-image="true" />
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="workout.name">پرس سینه با دمبل</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="workout.details">4 ست × 12 تکرار - 15 کیلو</p>
+                                <span class="inline-block bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full mt-2">تمام شده</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-gray-900" data-bind="workout.calories">85</span>
+                                <span class="text-sm text-gray-500">کالری</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-3">
+                <div class="flex items-start gap-3">
+                    <!-- Person doing squats with a barbell in gym setting -->
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100" alt="Barbell squats" class="w-16 h-16 rounded-xl object-cover" data-mock-image="true" />
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900" data-bind="workout.name">اسکات با بار</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="workout.details">5 ست × 8 تکرار - 60 کیلو</p>
+                                <span class="inline-block bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full mt-2">تمام شده</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-gray-900" data-bind="workout.calories">120</span>
+                                <span class="text-sm text-gray-500">کالری</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </section>
+        <!-- @END_COMPONENT: WorkoutHistorySection -->
+
+        <!-- Progress Charts -->
+        <!-- @COMPONENT: ProgressChartsSection -->
+        <section class="px-4 pb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">پیشرفت هفتگی</h2>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-900">روند وزن</h3>
+                    <select class="text-sm text-gray-600 border border-gray-200 rounded-lg px-2 py-1">
+                        <option>7 روز اخیر</option>
+                        <option>30 روز اخیر</option>
+                        <option>3 ماه اخیر</option>
+                    </select>
+                </div>
+                
+                <!-- Simple Chart Representation -->
+                <div class="relative h-32 bg-gray-50 rounded-lg p-4 mb-4">
+                    <!-- Chart placeholder - in real implementation, use Chart.js or similar -->
+                    <div class="absolute bottom-4 right-4 w-4 h-16 bg-primary rounded-full opacity-60"></div>
+                    <div class="absolute bottom-4 right-12 w-4 h-20 bg-primary rounded-full opacity-70"></div>
+                    <div class="absolute bottom-4 right-20 w-4 h-18 bg-primary rounded-full opacity-80"></div>
+                    <div class="absolute bottom-4 right-28 w-4 h-22 bg-primary rounded-full opacity-90"></div>
+                    <div class="absolute bottom-4 right-36 w-4 h-24 bg-primary rounded-full"></div>
+                    <div class="absolute bottom-4 right-44 w-4 h-20 bg-primary rounded-full opacity-90"></div>
+                    <div class="absolute bottom-4 right-52 w-4 h-16 bg-primary rounded-full opacity-80"></div>
+                    
+                    <div class="absolute top-2 right-4 text-xs text-gray-500">82.5 کیلو</div>
+                    <div class="absolute bottom-1 right-4 text-xs text-gray-400">امروز</div>
+                    <!-- @FUNCTIONALITY: This chart should implement weight tracking visualization using Chart.js -->
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-lg font-bold text-secondary">-2.3</div>
+                        <div class="text-xs text-gray-500">کیلو کاهش</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-primary">82.5</div>
+                        <div class="text-xs text-gray-500">وزن فعلی</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-accent">78.0</div>
+                        <div class="text-xs text-gray-500">وزن هدف</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: ProgressChartsSection -->
+    </main>
+    <!-- @END_COMPONENT: MainContent -->
+
+    <!-- Bottom Navigation -->
+    <!-- @COMPONENT: BottomNavigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex justify-around">
+            <button class="flex flex-col items-center py-2 px-3 text-primary" data-event="click:navigate" data-route="dashboard">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-xs font-medium">خانه</span>
+            </button>
+            
+            <button class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-primary transition-colors" data-event="click:navigate" data-route="food">
+                <i class="fas fa-utensils text-lg mb-1"></i>
+                <span class="text-xs">غذا</span>
+            </button>
+            
+            <button class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-primary transition-colors" data-event="click:navigate" data-route="workout">
+                <i class="fas fa-dumbbell text-lg mb-1"></i>
+                <span class="text-xs">تمرین</span>
+            </button>
+            
+            <button class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-primary transition-colors" data-event="click:navigate" data-route="progress">
+                <i class="fas fa-chart-line text-lg mb-1"></i>
+                <span class="text-xs">پیشرفت</span>
+            </button>
+            
+            <button class="flex flex-col items-center py-2 px-3 text-gray-400 hover:text-primary transition-colors" data-event="click:navigate" data-route="profile">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-xs">پروفایل</span>
+            </button>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: BottomNavigation -->
+
+    <!-- Food Logging Modal (Initially Hidden) -->
+    <!-- @COMPONENT: FoodLoggingModal -->
+    <div id="foodModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-hidden">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-gray-900">افزودن غذا</h2>
+                    <button class="p-2 text-gray-600 hover:text-gray-800" data-event="click:closeFoodModal">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-4 overflow-y-auto max-h-[calc(85vh-80px)]">
+                <!-- Search -->
+                <div class="relative mb-4">
+                    <input type="text" placeholder="جستجو غذا..." class="w-full p-4 pr-12 border border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none" data-mock="true" />
+                    <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+
+                <!-- Popular Foods -->
+                <h3 class="font-semibold text-gray-900 mb-3">غذاهای محبوب</h3>
+                <div class="space-y-2 mb-6">
+                    <!-- @MAP: popularFoods.map(food => ( -->
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                        <!-- Traditional Persian herb stew (khoreshte ghormeh sabzi) in a bowl -->
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" alt="Ghormeh Sabzi" class="w-12 h-12 rounded-lg object-cover ml-3" data-mock-image="true" />
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900" data-bind="food.name">قورمه سبزی</h4>
+                            <p class="text-sm text-gray-600" data-bind="food.calories">320 کالری در هر پیمانه</p>
+                        </div>
+                        <button class="text-primary hover:text-primary/80">
+                            <i class="fas fa-plus text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+                        <!-- Traditional Persian rice with barberries (zereshk polo) on a plate -->
+                        <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" alt="Zereshk Polo" class="w-12 h-12 rounded-lg object-cover ml-3" data-mock-image="true" />
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900" data-bind="food.name">زرشک پلو</h4>
+                            <p class="text-sm text-gray-600" data-bind="food.calories">280 کالری در هر پیمانه</p>
+                        </div>
+                        <button class="text-primary hover:text-primary/80">
+                            <i class="fas fa-plus text-lg"></i>
+                        </button>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+
+                <!-- Add Custom Food -->
+                <button class="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-primary hover:text-primary transition-colors">
+                    <i class="fas fa-plus text-lg mb-2 block"></i>
+                    افزودن غذای سفارشی
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: FoodLoggingModal -->
+
+    <script>
+        (function() {
+            // TODO: Implement proper state management and API integration
+            
+            // Simple modal controls
+            function openFoodLogger() {
+                document.getElementById('foodModal').classList.remove('hidden');
+            }
+            
+            function closeFoodModal() {
+                document.getElementById('foodModal').classList.add('hidden');
+            }
+            
+            // Event listeners for demo purposes
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event="click:openFoodLogger"]')) {
+                    openFoodLogger();
+                }
+                if (e.target.closest('[data-event="click:closeFoodModal"]')) {
+                    closeFoodModal();
+                }
+                if (e.target.closest('#foodModal') === document.getElementById('foodModal')) {
+                    closeFoodModal();
+                }
+            });
+
+            // Prevent modal close when clicking inside modal content
+            document.querySelector('#foodModal .bg-white').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // TODO: Implement data binding for dynamic content
+            // TODO: Add offline storage capabilities
+            // TODO: Implement Persian food database integration
+            // TODO: Add calorie calculation logic
+            // TODO: Implement workout tracking functionality
+            // TODO: Add progress chart visualization
+            // TODO: Implement notification scheduling
+        })();
+    </script>
+</body>
+</html>
