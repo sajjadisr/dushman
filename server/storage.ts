@@ -276,7 +276,7 @@ export class MemStorage implements IStorage {
 
     exercises.forEach(exercise => {
       const id = randomUUID();
-      this.exercises.set(id, { ...exercise, id });
+      this.exercises.set(id, { ...exercise, id, caloriesPerMinute: exercise.caloriesPerMinute ?? null });
     });
   }
 
@@ -358,7 +358,12 @@ export class MemStorage implements IStorage {
 
   async createFoodEntry(insertEntry: InsertFoodEntry): Promise<FoodEntry> {
     const id = randomUUID();
-    const entry: FoodEntry = { ...insertEntry, id, loggedAt: new Date() };
+    const entry: FoodEntry = {
+      ...insertEntry,
+      id,
+      servings: insertEntry.servings ?? 1,
+      loggedAt: new Date()
+    };
     this.foodEntries.set(id, entry);
     return entry;
   }
@@ -382,7 +387,11 @@ export class MemStorage implements IStorage {
 
   async createExercise(insertExercise: InsertExercise): Promise<Exercise> {
     const id = randomUUID();
-    const exercise: Exercise = { ...insertExercise, id };
+    const exercise: Exercise = {
+      ...insertExercise,
+      id,
+      caloriesPerMinute: insertExercise.caloriesPerMinute ?? null
+    };
     this.exercises.set(id, exercise);
     return exercise;
   }
@@ -415,8 +424,13 @@ export class MemStorage implements IStorage {
       ...insertSet, 
       id, 
       completedAt: new Date(),
-      sets: insertSet.sets || 1,
-      rpe: insertSet.rpe || null
+      sets: insertSet.sets ?? 1,
+      weight: insertSet.weight ?? null,
+      reps: insertSet.reps ?? null,
+      rpe: insertSet.rpe ?? null,
+      duration: insertSet.duration ?? null,
+      restTime: insertSet.restTime ?? null,
+      notes: insertSet.notes ?? null
     };
     this.workoutSets.set(id, set);
     return set;
@@ -439,10 +453,11 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const workout: Workout = { 
       ...insertWorkout, 
-      id, 
+      id,
       startedAt: new Date(),
-      completedAt: insertWorkout.completedAt || null,
-      totalCaloriesBurned: insertWorkout.totalCaloriesBurned || 0
+      duration: insertWorkout.duration ?? null,
+      totalCaloriesBurned: insertWorkout.totalCaloriesBurned ?? 0,
+      completedAt: null
     };
     this.workouts.set(id, workout);
     return workout;
@@ -500,7 +515,8 @@ export class MemStorage implements IStorage {
       ...insertPlan, 
       id, 
       createdAt: new Date(),
-      isActive: insertPlan.isActive || false
+      description: insertPlan.description ?? null,
+      isActive: insertPlan.isActive ?? false
     };
     this.workoutPlans.set(id, plan);
     return plan;
@@ -548,7 +564,15 @@ export class MemStorage implements IStorage {
 
   async createWorkoutPlanExercise(insertExercise: InsertWorkoutPlanExercise): Promise<WorkoutPlanExercise> {
     const id = randomUUID();
-    const exercise: WorkoutPlanExercise = { ...insertExercise, id };
+    const exercise: WorkoutPlanExercise = { 
+      ...insertExercise, 
+      id,
+      targetSets: insertExercise.targetSets ?? null,
+      targetReps: insertExercise.targetReps ?? null,
+      targetWeight: insertExercise.targetWeight ?? null,
+      restTime: insertExercise.restTime ?? null,
+      notes: insertExercise.notes ?? null
+    };
     this.workoutPlanExercises.set(id, exercise);
     return exercise;
   }

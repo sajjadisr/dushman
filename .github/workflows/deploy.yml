@@ -32,4 +32,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/public # Must match the outDir in vite.config.ts
+          publish_dir: ./dist/public
+          enable_jekyll: false
+          cname: '' # Add your custom domain here if you have one
