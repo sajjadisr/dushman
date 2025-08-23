@@ -14,12 +14,12 @@ export default function DailySummary() {
   if (isLoading) {
     return (
       <section className="px-4 py-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">خلاصه امروز</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">خلاصه امروز</h2>
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-gray-200 animate-pulse rounded-xl h-24"></div>
-          <div className="bg-gray-200 animate-pulse rounded-xl h-24"></div>
+          <div className="bg-muted animate-pulse rounded-xl h-24"></div>
+          <div className="bg-muted animate-pulse rounded-xl h-24"></div>
         </div>
-        <div className="bg-gray-200 animate-pulse rounded-xl h-20"></div>
+        <div className="bg-muted animate-pulse rounded-xl h-20"></div>
       </section>
     );
   }
